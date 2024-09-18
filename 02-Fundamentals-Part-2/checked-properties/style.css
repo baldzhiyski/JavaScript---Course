@@ -1,0 +1,60 @@
+/* Style for body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Style for checkboxes and radio buttons */
+input[type="checkbox"], input[type="radio"] {
+    margin-right: 10px;
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
+/* Style for labels */
+label {
+    font-size: 1.2em;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Add some spacing between elements */
+input[type="radio"] + label, input[type="checkbox"] + label {
+    display: block;
+    margin: 15px 0;
+}
+
+/* Style for the checkbox label */
+label[for="myCheckBox"] {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Add hover effect for labels */
+label:hover {
+    color: #3498db;
+}
+
+/* Add some transition for hover effects */
+label {
+    transition: color 0.3s ease;
+}
+
+#mySubmit{
+    font-size: 3em;
+    background-color: aquamarine;
+    transition: ease-in 0.3s;
+    border-radius: 40%;
+}
+
+#mySubmit:hover{
+    background-color: #2c3e50;
+    color: white;
+}
