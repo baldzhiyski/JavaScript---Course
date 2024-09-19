@@ -9,12 +9,15 @@ const rollBtn = document.querySelector(".btn.btn--roll");
 const holdBtn = document.querySelector(".btn.btn--hold");
 const resetGameBtn = document.querySelector(".btn.btn--new");
 
+dice.classList.add("hidden");
+
 // Add variable to track the current player (0 for player 1, 1 for player 2)
 let activePlayerIndex = 0; 
 
 rollBtn.addEventListener("click", () => {
     let randomPicNumber = Math.floor(Math.random() * 6) + 1;
     dice.src = pictures[randomPicNumber - 1];
+    dice.classList.remove("hidden");
 
     // Get the current active player's scores based on the active player index
     let currentScore = activePlayerIndex === 0 ? currentScore1 : currentScore2;
@@ -57,7 +60,7 @@ resetGameBtn.addEventListener("click", () => {
     currentScore2.textContent = 0;
 
     // Reset the dice image to the default one
-    dice.src = "dice-1.png";
+    dice.classList.add("hidden")
 });
 
 function switchPlayer() {
