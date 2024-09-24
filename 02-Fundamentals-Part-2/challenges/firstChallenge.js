@@ -50,14 +50,15 @@ let playersFinal = ["Thiago", "Coutinho", "Perisic", ...players1];
 
 console.log(allPlayers);
 
-let { team1, x, team2 } = game.odds;
-let draw = x;
+let { team1, x: draw, team2 } = game.odds;
+
 console.log(team1, draw);
 
 team1 > team2 ? console.log("Team One Wins ! ") : console.log("Team Two Wins!");
 
 function printGoals(...players) {
   let number = 0;
+
   players.forEach((player) => {
     console.log(player);
     number++;
