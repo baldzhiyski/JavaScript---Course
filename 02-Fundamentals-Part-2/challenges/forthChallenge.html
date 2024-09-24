@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camel Case Converter</title>
+</head>
+<body>
+  <textarea id="inputText" rows="10" cols="30" placeholder="Paste variables here"></textarea>
+  <br />
+  <button id="convertBtn">Convert to camelCase</button>
+
+  <script>
+    document.getElementById('convertBtn').addEventListener('click', function() {
+      const text = document.getElementById('inputText').value;
+      const lines = text.split('\n');
+      
+      lines.forEach((line, index) => {
+        // Trim spaces and make everything lowercase for uniformity
+        let trimmed = line.trim().toLowerCase();
+        
+        // Split words by underscores
+        let parts = trimmed.split('_');
+        
+        // Convert to camelCase: first word stays lowercase, subsequent words capitalize the first letter
+        let camelCase = parts[0];
+        for (let i = 1; i < parts.length; i++) {
+          camelCase += parts[i][0].toUpperCase() + parts[i].slice(1);
+        }
+        
+        // Output to console with "✅" based on the line number (index + 1)
+        console.log(`${camelCase.padEnd(20)} ${'✅'.repeat(index + 1)}`);
+      });
+    });
+  </script>
+</body>
+</html>
