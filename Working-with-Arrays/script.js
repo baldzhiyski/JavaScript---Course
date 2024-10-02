@@ -72,6 +72,31 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+const startLogoutTimer = function () {
+  let timeLeft = 300;
+  const tick = function () {
+    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+    const seconds = String(timeLeft % 60).padStart(2, "0");
+
+    labelTimer.textContent = ` ${minutes}:${seconds}`;
+
+    if (timeLeft === 0) {
+      alert("You have been logged out!");
+      loggedAcc = "";
+      clearInterval(timer);
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = "Log In to get started";
+      inputLoginUsername.value = inputLoginPin.value = "";
+      inputLoginPin.blur();
+    }
+
+    timeLeft--;
+  };
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 const formatMovementDate = function (date) {
   const calcDaysPassed = (date1, date2) => {
     return Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
@@ -179,6 +204,7 @@ const updateUI = function (currentAcc) {
 createUsernames(accounts);
 
 let loggedAcc;
+let timer;
 // Event Handlers
 
 btnLogin.addEventListener("click", function (e) {
@@ -215,6 +241,10 @@ btnLogin.addEventListener("click", function (e) {
     ).format(now);
 
     updateUI(loggedAcc);
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogoutTimer();
   }
 });
 
@@ -240,6 +270,9 @@ btnTransfer.addEventListener("click", function (e) {
     loggedAcc.movementsDates.push(new Date());
     recieverAcc.movementsDates.push(new Date());
     updateUI(loggedAcc);
+
+    clearInterval(timer);
+    timer = startLogoutTimer();
   }
 });
 
@@ -249,12 +282,16 @@ btnLoan.addEventListener("click", function (e) {
   const amount = Number(inputLoanAmount.value);
 
   if (amount > 0 && loggedAcc.movements.some((mov) => mov >= amount * 0.1)) {
-    loggedAcc.movements.push(amount);
+    setTimeout(function () {
+      loggedAcc.movements.push(amount);
 
-    loggedAcc.movementsDates.push(new Date());
-    updateUI(loggedAcc);
+      loggedAcc.movementsDates.push(new Date());
+      updateUI(loggedAcc);
+      inputLoanAmount.value = "";
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 3000);
   }
-  inputLoanAmount.value = "";
 });
 
 btnClose.addEventListener("click", function (e) {
