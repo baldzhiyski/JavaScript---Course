@@ -11,14 +11,14 @@ const account1 = {
   pin: 1111,
 
   movementsDates: [
-    "2019-11-18T21:31:17.178Z",
-    "2019-12-23T07:42:02.383Z",
-    "2020-01-28T09:15:04.904Z",
-    "2020-04-01T10:17:24.185Z",
-    "2020-05-08T14:11:59.604Z",
-    "2020-05-27T17:01:17.194Z",
-    "2020-07-11T23:36:17.929Z",
-    "2020-07-12T10:51:36.790Z",
+    "2014-11-18T21:31:17.178Z",
+    "2014-12-23T07:42:02.383Z",
+    "2024-01-28T09:15:04.904Z",
+    "2024-04-01T10:17:24.185Z",
+    "2024-05-08T14:11:59.604Z",
+    "2024-05-02 T17:01:17.194Z",
+    "2024-09-02T23:36:17.929Z",
+    "2024-10-01T10:51:36.790Z",
   ],
   currency: "EUR",
   locale: "pt-PT", // de-DE
@@ -72,6 +72,36 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+const formatMovementDate = function (date) {
+  const calcDaysPassed = (date1, date2) => {
+    return Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+  };
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+
+  // Logic to format based on the number of days passed
+  if (daysPassed === 0) return "Today";
+  if (daysPassed === 1) return "Yesterday";
+  if (daysPassed === 2) return "2 days ago";
+  if (daysPassed === 3) return "3 days ago";
+  if (daysPassed === 7) return "A week ago";
+
+  const day = `${date.getDate()}`.padStart(2, 0);
+  const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  const year = date.getFullYear();
+  const hour = `${date.getHours()}`.padStart(2, 0);
+  const minutes = `${date.getMinutes()}`.padStart(2, 0);
+
+  return `${day}/${month}/${year}, ${hour}:${minutes}`;
+};
+
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: `${currency}`,
+  }).format(value);
+};
+
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = "";
   const movs = sort
@@ -80,19 +110,17 @@ const displayMovements = function (acc, sort = false) {
   movs.forEach((movement, index) => {
     let type = movement > 0 ? "deposit" : "withdrawal";
     const date = new Date(acc.movementsDates[index]);
+    const parsedDate = formatMovementDate(date);
 
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
-    // Option 1: Extract using substring
-    const parsedDate = `${day}/${month}/${year}`;
+    const formattedMov = formatCur(movement, acc.locale, acc.currency);
+
     let html = `
      <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       index + 1
     } deposit</div>
          <div class="movements__date">${parsedDate}</div>
-          <div class="movements__value">${movement.toFixed(2)}€</div>
+          <div class="movements__value">${formattedMov}</div>
         </div>
         </div>`;
 
@@ -104,7 +132,7 @@ const calcPrintBalance = (acc) => {
     return acc + curVal;
   }, 0);
   acc.balance = balance;
-  labelBalance.textContent = `${balance.toFixed(2)}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 const createUsernames = (accs) => {
   accs.forEach((acc) => {
@@ -125,8 +153,8 @@ const calcDisplaySummary = function (acc) {
     .filter((mov) => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
 
-  labelSumIn.textContent = `${income.toFixed(2)}€`;
-  labelSumOut.textContent = `${Math.abs(outcomes.toFixed(2))}€`;
+  labelSumIn.textContent = formatCur(income, acc.locale, acc.currency);
+  labelSumOut.textContent = formatCur(outcomes, acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter((mov) => mov > 0)
@@ -134,7 +162,7 @@ const calcDisplaySummary = function (acc) {
     .filter((interest) => interest > 1)
     .reduce((acc, mov) => acc + mov, 0);
 
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const updateUI = function (currentAcc) {
@@ -170,13 +198,21 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginPin.blur();
 
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const minutes = `${now.getMinutes()}`.padStart(2, 0);
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      // weekday: 'long',
+    };
+    // const locale = navigator.language;
+    // console.log(locale);
 
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minutes}`;
+    labelDate.textContent = new Intl.DateTimeFormat(
+      loggedAcc.locale,
+      options
+    ).format(now);
 
     updateUI(loggedAcc);
   }
