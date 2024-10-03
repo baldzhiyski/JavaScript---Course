@@ -4,6 +4,8 @@ const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const btnCloseModal = document.querySelector(".btn--close-modal");
 const btnsOpenModal = document.querySelectorAll(".btn--show-modal");
+const btnScrollTo = document.querySelector(".btn--scroll-to");
+const section1 = document.querySelector("#section--1");
 
 const header = document.querySelector(".header");
 
@@ -44,3 +46,42 @@ document
   .addEventListener("click", function () {
     cookieMessage.remove();
   });
+
+btnScrollTo.addEventListener("click", function (e) {
+  const s1coords = section1.getBoundingClientRect();
+
+  //   window.scrollTo({
+  //     left: s1coords.left + window.pageXOffset,
+  //     top: s1coords.top + window.pageYOffset,
+  //     behavior: "smooth",
+  //   });
+
+  section1.scrollIntoView({ behavior: "smooth" });
+});
+
+// document.querySelectorAll(".nav__link").forEach((el) => {
+//   el.addEventListener("click", function (e) {
+//     e.preventDefault();
+
+//     const id = this.getAttribute("href");
+//     document.querySelector(id).scrollIntoView({ behavior: "smooth" });
+//   });
+// });
+
+// Add event listener to common parent element instead of adding to each el
+document.querySelector(".nav__links").addEventListener("click", function (e) {
+  if (e.target.classList.contains("nav__link")) {
+    e.preventDefault(); // Prevent default link behavior
+    const id = e.target.getAttribute("href"); // Get the href value (e.g., #section1)
+
+    if (id.startsWith("#")) {
+      const section = document.querySelector(id);
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    }
+  }
+});
