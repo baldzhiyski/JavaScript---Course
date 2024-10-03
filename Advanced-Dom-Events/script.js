@@ -85,3 +85,26 @@ document.querySelector(".nav__links").addEventListener("click", function (e) {
     }
   }
 });
+
+// Tab Components
+const tabs = document.querySelectorAll(".operations__tab");
+const tabsContainer = document.querySelector(".operations__tab-container");
+const tabsContent = document.querySelectorAll(".operations__content");
+
+// Using event delagation
+tabsContainer.addEventListener("click", function (e) {
+  const clicked = e.target.closest(".operations__tab");
+
+  if (!clicked) return;
+
+  tabs.forEach((tab) => tab.classList.remove("operations__tab--active"));
+  clicked.classList.add("operations__tab--active");
+
+  // Displaying the correct content area
+  tabsContent.forEach((tab) =>
+    tab.classList.remove("operations__content--active")
+  );
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add("operations__content--active");
+});
