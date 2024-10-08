@@ -28,7 +28,16 @@ const displayCountry = function (countryName) {
     })
     .then((data) => {
       renderCountry(data[0]);
-    });
+      const neighbour = data[0].borders[0];
+
+      if (!neighbour) return;
+
+      return fetch(
+        `https://countries-api-836d.onrender.com/countries/alpha/${neighbour}`
+      );
+    })
+    .then((responce) => responce.json())
+    .then((data) => renderCountry(data, "neighbour"));
 };
 
 displayCountry("portugal");
