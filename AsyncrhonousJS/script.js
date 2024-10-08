@@ -18,29 +18,100 @@ const renderCountry = function (data, className) {
       </article>
       `;
   countriesContainer.insertAdjacentHTML("beforeend", html);
-  countriesContainer.style.opacity = 1;
+};
+
+const renderError = function (message) {
+  countriesContainer.insertAdjacentText("beforeend", message);
+};
+
+const getJSON = function (url, errorMsg = "Something went wrong") {
+  return fetch(url).then((response) => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
 };
 
 const displayCountry = function (countryName) {
-  fetch(`https://countries-api-836d.onrender.com/countries/name/${countryName}`)
-    .then((response) => {
-      return response.json();
-    })
+  getJSON(
+    `https://countries-api-836d.onrender.com/countries/name/${countryName}`
+  )
     .then((data) => {
       renderCountry(data[0]);
-      const neighbour = data[0].borders[0];
 
-      if (!neighbour) return;
+      const neighbour = data[0].borders?.[0]; // Check if borders exist and grab the first one
 
-      return fetch(
+      if (!neighbour) throw new Error("No neighbour found");
+
+      return getJSON(
         `https://countries-api-836d.onrender.com/countries/alpha/${neighbour}`
       );
     })
-    .then((responce) => responce.json())
-    .then((data) => renderCountry(data, "neighbour"));
+    .then((data) => renderCountry(data, "neighbour"))
+    .catch((err) => renderError(`Something went wrong! ${err.message}`))
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
 };
 
-displayCountry("portugal");
+// Challenge 1
+const requestOptions = {
+  method: "GET",
+};
+const key = "";
+function getCoordinates(callback) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        callback(latitude, longitude);
+      },
+      (error) => {
+        console.error("Error getting location: ", error);
+      }
+    );
+  } else {
+    console.log("Geolocation is not supported by this browser.");
+  }
+}
+
+// When the button is clicked, get the coordinates and make the API call
+btn.addEventListener("click", function () {
+  getCoordinates((latitude, longitude) => {
+    const inputText = `${latitude},${longitude}`;
+    const url = `https://api.geoapify.com/v1/geocode/search?text=${inputText}&apiKey=${key}`;
+
+    fetch(url, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const countryName = result.features[0].properties.country;
+        displayCountry(countryName);
+      }) // Handle the result here
+      .catch((error) => console.log("error", error));
+  });
+});
+// const displayCountry = function (countryName) {
+//   fetch(`https://countries-api-836d.onrender.com/countries/name/${countryName}`)
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .then((data) => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
+
+//       if (!neighbour) return;
+
+//       return fetch(
+//         `https://countries-api-836d.onrender.com/countries/alpha/${neighbour}`
+//       );
+//     })
+//     .then((responce) => responce.json())
+//     .then((data) => renderCountry(data, "neighbour"))
+//     .catch((err) => renderError(`Something went wrong ! ${err}`))
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
 
 // Old way of api requests
 // const getCountryData = function (country) {
