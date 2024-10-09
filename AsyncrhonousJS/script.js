@@ -90,6 +90,59 @@ btn.addEventListener("click", function () {
       .catch((error) => console.log("error", error));
   });
 });
+
+// Challenge 2
+// Function to create and load an image
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement("img");
+    img.src = imgPath;
+
+    // Handle image load event
+    img.addEventListener("load", function () {
+      document.querySelector(".images").appendChild(img);
+      resolve(img);
+    });
+
+    // Handle error event
+    img.addEventListener("error", function () {
+      reject(new Error("Image failed to load"));
+    });
+  });
+};
+
+// Wait function
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const images = ["img/img-1.jpg", "img/img-2.jpg", "img/img-3.jpg"];
+let currentImage; // Global variable to track the currently displayed image
+
+// Consume the promise and handle the flow
+const loadImages = async function () {
+  try {
+    for (const image of images) {
+      // Load image
+      currentImage = await createImage(image);
+      console.log(`${image} loaded successfully`);
+
+      // Wait for 2 seconds
+      await wait(2);
+
+      // Hide the current image
+      currentImage.style.display = "none";
+    }
+  } catch (err) {
+    console.error(err); // Handle any errors during image loading
+  }
+};
+
+// Start loading images
+loadImages();
+
 // const displayCountry = function (countryName) {
 //   fetch(`https://countries-api-836d.onrender.com/countries/name/${countryName}`)
 //     .then((response) => {
