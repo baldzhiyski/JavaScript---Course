@@ -31,28 +31,36 @@ const getJSON = function (url, errorMsg = "Something went wrong") {
   });
 };
 
-const displayCountry = function (countryName) {
-  getJSON(
-    `https://countries-api-836d.onrender.com/countries/name/${countryName}`
-  )
-    .then((data) => {
-      renderCountry(data[0]);
+const displayCountry = async function (countryName) {
+  try {
+    // Fetch the country data
+    const data = await getJSON(
+      `https://countries-api-836d.onrender.com/countries/name/${countryName}`
+    );
 
-      const neighbour = data[0].borders?.[0]; // Check if borders exist and grab the first one
+    renderCountry(data[0]);
 
-      if (!neighbour) throw new Error("No neighbour found");
+    // Get the first neighbour from the borders array (if exists)
+    const neighbour = data[0].borders?.[0];
 
-      return getJSON(
-        `https://countries-api-836d.onrender.com/countries/alpha/${neighbour}`
-      );
-    })
-    .then((data) => renderCountry(data, "neighbour"))
-    .catch((err) => renderError(`Something went wrong! ${err.message}`))
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
+    if (!neighbour) throw new Error("No neighbour found");
+
+    // Fetch the neighbour country data
+    const neighbourData = await getJSON(
+      `https://countries-api-836d.onrender.com/countries/alpha/${neighbour}`
+    );
+
+    // Render the neighbour country
+    renderCountry(neighbourData, "neighbour");
+  } catch (err) {
+    // Handle any errors during the fetching process
+    renderError(`Something went wrong! ${err.message}`);
+  } finally {
+    // Set the opacity of the countries container
+    countriesContainer.style.opacity = 1;
+  }
 };
-
+displayCountry("bulgaria");
 // Challenge 1
 const requestOptions = {
   method: "GET",
