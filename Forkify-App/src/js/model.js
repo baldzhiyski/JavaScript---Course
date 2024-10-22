@@ -11,7 +11,7 @@ export const loadRecipe = async function (recipeId) {
 
     state.recipe = createRecipeObject(data);
   } catch (e) {
-    alert(e);
+    throw e;
   }
 };
 
